@@ -1,0 +1,84 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+
+        maven { url "https://maven.eveoh.nl/content/repositories/releases" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://sdlcbrm.hiw.com/artifactory/crmteam-repo" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
+        classpath "nl.eveoh:gradle-aspectj:2.0"
+    }
+}
+
+ext {
+	aspectjVersion = '1.8.12'
+    apacheCommonsVersion = '3.6'
+    commonsLoggingVersion = '1.2'
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+
+        maven { url "https://maven.eveoh.nl/content/repositories/releases" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://sdlcbrm.hiw.com/artifactory/crmteam-repo" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+	apply plugin: "io.spring.dependency-management"
+
+	dependencyManagement {
+		imports {
+	    	mavenBom 'org.springframework.boot:spring-boot-starter-parent:1.5.10.RELEASE'
+		}
+	    dependencies {
+	    	dependency 'org.springframework:spring-core:4.0.3.RELEASE'
+	        dependency "commons-logging:commons-logging:3.6"
+	        dependency "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+	        dependency "nl.jqno.equalsverifier:equalsverifier:2.3"
+	    }
+	}
+
+    group = 'com.someCompany.crm.prfsvc'
+    version = '1.1.70-SNAPSHOT'
+}
+    
+apply plugin: 'org.springframework.boot'
+
+bootRepackage {
+    mainClass = 'B'
+}
+
+bootRun {
+    jvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007', '-Duser.timezone=UTC']
+}
+
+
+subprojects {
+    apply plugin: 'java'
+
+    configurations.all {
+        it.exclude group: 'commons-logging'
+    }
+
+    dependencies {
+        implementation 'commons-logging:commons-logging'
+        implementation "nl.jqno.equalsverifier:equalsverifier"
+    }
+}

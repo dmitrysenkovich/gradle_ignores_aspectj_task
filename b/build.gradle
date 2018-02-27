@@ -1,0 +1,8 @@
+dependencies{
+    implementation project(':a')
+}
+
+apply plugin: "aspectj"
+
+project.tasks['compileJava'].dependsOn.remove(project.tasks['compileAspect'])
+project.tasks['compileAspect'].dependsOn(project.tasks['compileJava'])
